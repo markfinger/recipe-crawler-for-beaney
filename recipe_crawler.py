@@ -7,6 +7,7 @@ import csv
 # Each url should be on a new line
 URL_FILE = os.path.join(os.path.dirname(__file__), 'urls_to_crawl.txt')
 
+# This is the file that we will write the output to
 CSV_FILE = os.path.join(os.path.dirname(__file__), 'output.csv')
 
 # We read in the content of URL_FILE
