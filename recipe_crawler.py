@@ -16,6 +16,9 @@ with open(URL_FILE, 'r') as url_file:
 # We split each url by end of the line
 urls_to_crawl = urls_file_contents.split('\n')
 
+# We remove any empty lines and whitespace from the url file
+urls_to_crawl = [url.strip() for url in urls_to_crawl if url and url.strip()]
+
 # As we check each url, this is where we store the data for each
 urls_crawled = []
 
