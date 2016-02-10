@@ -30,7 +30,11 @@ for url in urls_to_crawl:
         'url': url,
         'description': '',
         'image': '',
+        'ignored': ''
     }
+
+    # Add the data object to the list of urls crawled
+    urls_crawled.append(data)
 
     # This sends a request to get the HTML document for the url
     response = requests.get(url)
@@ -40,6 +44,14 @@ for url in urls_to_crawl:
 
     # We parse the HTML, so that we can search it for data
     parsed_html = BeautifulSoup(html_text, 'html.parser')
+
+    # They don't serve the usual 404 code for a missing page, so we need
+    # to look for a element that identifies missing pages
+    oops_sorry = parsed_html.find('div', {'class': 'oops-sorry'})
+    if oops_sorry:
+        print('Ignoring ' + url)
+        data['ignored'] = 'ignored'
+        continue
 
     # We look for the description field
     description = parsed_html.find('div', {'class': 'content-item quote-left-right clearfix'})
@@ -67,17 +79,14 @@ for url in urls_to_crawl:
     if image_response.ok:
         data['image'] = image_src
 
-    # Add the data object to the list of urls crawled
-    urls_crawled.append(data)
-
 # Now we output all the data to a CSV file, so you should be able to import it
 # into a spreadsheet easily
 with open(CSV_FILE, 'wb') as csv_file:
     csv_writer = csv.writer(csv_file)
 
     # We create the column titles
-    csv_writer.writerow(['URL', 'DESCRIPTION', 'IMAGE'])
+    csv_writer.writerow(['URL', 'DESCRIPTION', 'IMAGE', 'IGNORED'])
 
     # For every url we checked, write its data to the CSV file
     for data in urls_crawled:
-        csv_writer.writerow([data['url'], data['description'], data['image']])
+        csv_writer.writerow([data['url'], data['description'], data['image'], data['ignored']])
